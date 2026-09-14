@@ -1,4 +1,4 @@
-package ar.edu.unvime.apiblank.web;
+package ar.edu.unvime.apiblank.controller;
 
 import java.util.Map;
 
