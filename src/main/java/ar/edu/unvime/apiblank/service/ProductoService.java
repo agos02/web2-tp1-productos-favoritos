@@ -5,8 +5,9 @@ import ar.edu.unvime.apiblank.dto.DummyJsonProductosResponse;
 import ar.edu.unvime.apiblank.dto.ProductoDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-
 import java.util.List;
+
+/** Obtiene productos de DummyJSON y los mapea al DTO propio de la API. */
 
 @Service
 public class ProductoService {

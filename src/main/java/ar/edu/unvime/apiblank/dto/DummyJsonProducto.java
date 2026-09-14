@@ -1,6 +1,5 @@
-//un producto, tal como lo modela DummyJSON
-
 package ar.edu.unvime.apiblank.dto;
+/** Representa un producto tal como lo modela la API externa DummyJSON. */
 
 public record DummyJsonProducto(
         Integer id,
