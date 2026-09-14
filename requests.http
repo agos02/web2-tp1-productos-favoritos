@@ -1,0 +1,50 @@
+### Health check
+GET http://localhost:8080/health
+
+### Listar productos
+GET http://localhost:8080/api/productos
+
+### Obtener un producto
+GET http://localhost:8080/api/productos/1
+
+### Crear un favorito
+POST http://localhost:8080/api/favoritos
+Content-Type: application/json
+
+{
+  "productoId": 1,
+  "nota": "Me gustó para regalo"
+}
+
+### Crear otro favorito
+POST http://localhost:8080/api/favoritos
+Content-Type: application/json
+
+{
+  "productoId": 6,
+  "nota": "Para el cumpleaños de mamá"
+}
+
+### Listar favoritos
+GET http://localhost:8080/api/favoritos
+
+### Obtener un favorito (reemplazá el 1 por el id que te devolvió el POST)
+GET http://localhost:8080/api/favoritos/1
+
+### Actualizar un favorito
+PUT http://localhost:8080/api/favoritos/1
+Content-Type: application/json
+
+{
+  "productoId": 1,
+  "nota": "Nota actualizada"
+}
+
+### Eliminar un favorito
+DELETE http://localhost:8080/api/favoritos/1
+
+### Eliminar un favorito
+DELETE http://localhost:8080/api/favoritos/3
+
+### Probar un favorito inexistente (para ver el error, más adelante en el punto 7)
+GET http://localhost:8080/api/favoritos/999

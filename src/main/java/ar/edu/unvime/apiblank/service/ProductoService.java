@@ -1,11 +1,13 @@
 package ar.edu.unvime.apiblank.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+
 import ar.edu.unvime.apiblank.dto.DummyJsonProducto;
 import ar.edu.unvime.apiblank.dto.DummyJsonProductosResponse;
 import ar.edu.unvime.apiblank.dto.ProductoDto;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
-import java.util.List;
 
 /** Obtiene productos de DummyJSON y los mapea al DTO propio de la API. */
 
