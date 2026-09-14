@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ar.edu.unvime.apiblank.dto.FavoritoRequestDto;
 import ar.edu.unvime.apiblank.dto.FavoritoResponseDto;
 import ar.edu.unvime.apiblank.service.FavoritoService;
+import jakarta.validation.Valid;
 
 /** Expone el CRUD de favoritos como endpoints HTTP. */
 
@@ -31,7 +32,7 @@ public class FavoritoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FavoritoResponseDto crear(@RequestBody FavoritoRequestDto request) {
+    public FavoritoResponseDto crear(@Valid @RequestBody FavoritoRequestDto request) {
         return favoritoService.crear(request);
     }
 
@@ -46,7 +47,7 @@ public class FavoritoController {
     }
 
     @PutMapping("/{id}")
-    public FavoritoResponseDto actualizar(@PathVariable Long id, @RequestBody FavoritoRequestDto request) {
+    public FavoritoResponseDto actualizar(@PathVariable Long id, @Valid @RequestBody FavoritoRequestDto request) {
         return favoritoService.actualizar(id, request);
     }
 

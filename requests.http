@@ -48,3 +48,20 @@ DELETE http://localhost:8080/api/favoritos/3
 
 ### Probar un favorito inexistente (para ver el error, más adelante en el punto 7)
 GET http://localhost:8080/api/favoritos/999
+
+### Probar validación: nota vacía
+POST http://localhost:8080/api/favoritos
+Content-Type: application/json
+
+{
+  "productoId": 1,
+  "nota": ""
+}
+
+### Probar validación: productoId faltante
+POST http://localhost:8080/api/favoritos
+Content-Type: application/json
+
+{
+  "nota": "Sin producto"
+}
