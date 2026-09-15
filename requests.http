@@ -65,3 +65,6 @@ Content-Type: application/json
 {
   "nota": "Sin producto"
 }
+
+### Probar producto inexistente
+GET http://localhost:8080/api/productos/99999

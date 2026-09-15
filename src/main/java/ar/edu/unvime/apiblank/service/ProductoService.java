@@ -3,11 +3,13 @@ package ar.edu.unvime.apiblank.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import ar.edu.unvime.apiblank.dto.DummyJsonProducto;
 import ar.edu.unvime.apiblank.dto.DummyJsonProductosResponse;
 import ar.edu.unvime.apiblank.dto.ProductoDto;
+import ar.edu.unvime.apiblank.exception.ProductoNoEncontradoException;
 
 /** Obtiene productos de DummyJSON y los mapea al DTO propio de la API. */
 
@@ -32,12 +34,16 @@ public class ProductoService {
     }
 
     public ProductoDto obtenerPorId(Integer id) {
-        DummyJsonProducto producto = restClient.get()
-                .uri("/products/{id}", id)
-                .retrieve()
-                .body(DummyJsonProducto.class);
+        try {
+            DummyJsonProducto producto = restClient.get()
+                    .uri("/products/{id}", id)
+                    .retrieve()
+                    .body(DummyJsonProducto.class);
 
-        return mapearADto(producto);
+            return mapearADto(producto);
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new ProductoNoEncontradoException(id);
+        }
     }
 
     private ProductoDto mapearADto(DummyJsonProducto p) {
