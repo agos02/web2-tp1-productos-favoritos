@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ar.edu.unvime.apiblank.dto.FavoritoRequestDto;
 import ar.edu.unvime.apiblank.dto.FavoritoResponseDto;
 import ar.edu.unvime.apiblank.service.FavoritoService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 
 /** Expone el CRUD de favoritos como endpoints HTTP. */
@@ -30,27 +31,32 @@ public class FavoritoController {
         this.favoritoService = favoritoService;
     }
 
+    @Operation(summary = "Crea un nuevo favorito")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public FavoritoResponseDto crear(@Valid @RequestBody FavoritoRequestDto request) {
         return favoritoService.crear(request);
     }
 
+    @Operation(summary = "Lista todos los favoritos")
     @GetMapping
     public List<FavoritoResponseDto> listar() {
         return favoritoService.listar();
     }
 
+    @Operation(summary = "Obtiene un favorito por su id")
     @GetMapping("/{id}")
     public FavoritoResponseDto obtenerPorId(@PathVariable Long id) {
         return favoritoService.obtenerPorId(id);
     }
 
+    @Operation(summary = "Actualiza un favorito existente")
     @PutMapping("/{id}")
     public FavoritoResponseDto actualizar(@PathVariable Long id, @Valid @RequestBody FavoritoRequestDto request) {
         return favoritoService.actualizar(id, request);
     }
 
+    @Operation(summary = "Elimina un favorito")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Long id) {
