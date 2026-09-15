@@ -5,7 +5,7 @@ API REST con Spring Boot que expone:
 - CRUD de favoritos, con persistencia en memoria (sin base de datos).
 
 ## Estado
-En construcción
+Completo
 
 ## Requisitos
 - Java 25
@@ -42,3 +42,6 @@ Una vez levantado el proyecto, Swagger UI disponible en:
 - `GET /api/favoritos/{id}`
 - `PUT /api/favoritos/{id}`
 - `DELETE /api/favoritos/{id}`
+
+## Pruebas
+El archivo `requests.http` contiene casos de éxito y error para los tres recursos (health, productos, favoritos). Se puede ejecutar desde VS Code con la extensión REST Client.
