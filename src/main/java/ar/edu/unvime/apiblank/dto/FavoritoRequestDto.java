@@ -9,6 +9,9 @@ public record FavoritoRequestDto(
         Integer productoId,
 
         @NotBlank(message = "La nota no puede estar vacía")
-        String nota
+        String nota,
+
+        @NotNull(message = "El listaId es obligatorio")
+        Long listaId
 ) {
 }

@@ -4,9 +4,12 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 /** Representa una fila de la tabla favoritos; es un detalle de la persistencia, distinto del dominio. */
@@ -27,15 +30,20 @@ public class FavoritoEntity {
     @Column(name = "fecha_alta", nullable = false)
     private LocalDateTime fechaAlta;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lista_id")
+    private ListaEntity lista;
+
     /** Constructor vacío: JPA lo necesita para crear instancias al leer de la base. */
     public FavoritoEntity() {
     }
 
-    public FavoritoEntity(Long id, Integer productoId, String nota, LocalDateTime fechaAlta) {
+    public FavoritoEntity(Long id, Integer productoId, String nota, LocalDateTime fechaAlta, ListaEntity lista) {
         this.id = id;
         this.productoId = productoId;
         this.nota = nota;
         this.fechaAlta = fechaAlta;
+        this.lista = lista;
     }
 
     public Long getId() {
@@ -68,5 +76,13 @@ public class FavoritoEntity {
 
     public void setFechaAlta(LocalDateTime fechaAlta) {
         this.fechaAlta = fechaAlta;
+    }
+
+    public ListaEntity getLista() {
+        return lista;
+    }
+
+    public void setLista(ListaEntity lista) {
+        this.lista = lista;
     }
 }

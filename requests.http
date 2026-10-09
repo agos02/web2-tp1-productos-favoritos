@@ -1,5 +1,14 @@
+### ============================================================
+### Health check
+### ============================================================
+
 ### Health check
 GET http://localhost:8080/health
+
+
+### ============================================================
+### Productos
+### ============================================================
 
 ### Listar productos
 GET http://localhost:8080/api/productos
@@ -7,64 +16,185 @@ GET http://localhost:8080/api/productos
 ### Obtener un producto
 GET http://localhost:8080/api/productos/1
 
-### Crear un favorito
+### Probar producto inexistente (404)
+GET http://localhost:8080/api/productos/99999
+
+
+### ============================================================
+### Listas (crear primero: los favoritos las necesitan)
+### En una base limpia, "Regalos" queda con id 1 y "Para comprar en oferta" con id 2
+### ============================================================
+
+### Crear lista "Regalos" (201)
+POST http://localhost:8080/api/listas
+Content-Type: application/json
+
+{
+  "nombre": "Regalos"
+}
+
+### Crear lista "Para comprar en oferta" (201, queda vacía)
+POST http://localhost:8080/api/listas
+Content-Type: application/json
+
+{
+  "nombre": "Para comprar en oferta"
+}
+
+### Crear una lista con nombre vacío (400 validación)
+POST http://localhost:8080/api/listas
+Content-Type: application/json
+
+{
+  "nombre": ""
+}
+
+### Listar listas (200)
+GET http://localhost:8080/api/listas
+
+### Obtener una lista (200)
+GET http://localhost:8080/api/listas/1
+
+### Obtener una lista inexistente (404)
+GET http://localhost:8080/api/listas/999
+
+
+### ============================================================
+### Favoritos
+### ============================================================
+
+### Crear un favorito (201)
 POST http://localhost:8080/api/favoritos
 Content-Type: application/json
 
 {
   "productoId": 1,
-  "nota": "Me gustó para regalo"
+  "nota": "Me gustó para regalo",
+  "listaId": 1
 }
 
-### Crear otro favorito
+### Crear otro favorito (201)
 POST http://localhost:8080/api/favoritos
 Content-Type: application/json
 
 {
   "productoId": 6,
-  "nota": "Para el cumpleaños de mamá"
+  "nota": "Para el cumpleaños de mamá",
+  "listaId": 1
 }
 
-### Listar favoritos
+### Listar favoritos (200)
 GET http://localhost:8080/api/favoritos
 
 ### Obtener un favorito (reemplazá el 1 por el id que te devolvió el POST)
 GET http://localhost:8080/api/favoritos/1
 
-### Actualizar un favorito
+### Probar un favorito inexistente (404)
+GET http://localhost:8080/api/favoritos/999
+
+### Actualizar un favorito (200)
 PUT http://localhost:8080/api/favoritos/1
 Content-Type: application/json
 
 {
   "productoId": 1,
-  "nota": "Nota actualizada"
+  "nota": "Nota actualizada",
+  "listaId": 1
 }
 
-### Eliminar un favorito
-DELETE http://localhost:8080/api/favoritos/1
-
-### Eliminar un favorito
-DELETE http://localhost:8080/api/favoritos/3
-
-### Probar un favorito inexistente (para ver el error, más adelante en el punto 7)
-GET http://localhost:8080/api/favoritos/999
-
-### Probar validación: nota vacía
+### Probar validación: nota vacía (400)
 POST http://localhost:8080/api/favoritos
 Content-Type: application/json
 
 {
   "productoId": 1,
-  "nota": ""
+  "nota": "",
+  "listaId": 1
 }
 
-### Probar validación: productoId faltante
+### Probar validación: productoId faltante (400)
 POST http://localhost:8080/api/favoritos
 Content-Type: application/json
 
 {
-  "nota": "Sin producto"
+  "nota": "Sin producto",
+  "listaId": 1
 }
 
-### Probar producto inexistente
-GET http://localhost:8080/api/productos/99999
+### Probar validación: listaId faltante (400)
+POST http://localhost:8080/api/favoritos
+Content-Type: application/json
+
+{
+  "productoId": 1,
+  "nota": "Sin lista"
+}
+
+### Probar lista inexistente (404)
+POST http://localhost:8080/api/favoritos
+Content-Type: application/json
+
+{
+  "productoId": 1,
+  "nota": "Lista que no existe",
+  "listaId": 999
+}
+
+### Actualizar un favorito con lista inexistente (404)
+PUT http://localhost:8080/api/favoritos/2
+Content-Type: application/json
+
+{
+  "productoId": 6,
+  "nota": "Lista que no existe",
+  "listaId": 999
+}
+
+### Actualizar un favorito inexistente (404)
+PUT http://localhost:8080/api/favoritos/999
+Content-Type: application/json
+
+{
+  "productoId": 1,
+  "nota": "No existe",
+  "listaId": 1
+}
+
+### Eliminar un favorito inexistente (404)
+DELETE http://localhost:8080/api/favoritos/999
+
+
+### ============================================================
+### Favoritos de una lista
+### ============================================================
+
+### Favoritos de una lista con datos (200)
+GET http://localhost:8080/api/listas/1/favoritos
+
+### Favoritos de una lista vacía (200, [])
+GET http://localhost:8080/api/listas/2/favoritos
+
+### Favoritos de una lista inexistente (404)
+GET http://localhost:8080/api/listas/999/favoritos
+
+
+### ============================================================
+### Eliminar listas
+### ============================================================
+
+### Eliminar una lista con favoritos (409)
+DELETE http://localhost:8080/api/listas/1
+
+### Eliminar una lista inexistente (404)
+DELETE http://localhost:8080/api/listas/999
+
+### Eliminar una lista vacía (204)
+DELETE http://localhost:8080/api/listas/2
+
+
+### ============================================================
+### Eliminar un favorito (204) - dejalo para el final: borra el favorito 1
+### ============================================================
+
+### Eliminar un favorito (204)
+DELETE http://localhost:8080/api/favoritos/1

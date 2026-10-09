@@ -8,22 +8,32 @@ import org.springframework.stereotype.Service;
 import ar.edu.unvime.apiblank.dto.FavoritoRequestDto;
 import ar.edu.unvime.apiblank.dto.FavoritoResponseDto;
 import ar.edu.unvime.apiblank.exception.FavoritoNoEncontradoException;
+import ar.edu.unvime.apiblank.exception.ListaNoEncontradaException;
 import ar.edu.unvime.apiblank.model.Favorito;
 import ar.edu.unvime.apiblank.repository.FavoritoRepository;
+import ar.edu.unvime.apiblank.repository.ListaRepository;
 
 /** Contiene la lógica de negocio para crear, consultar, actualizar y eliminar favoritos. */
-
 @Service
 public class FavoritoService {
 
     private final FavoritoRepository favoritoRepository;
+    private final ListaRepository listaRepository;
 
-    public FavoritoService(FavoritoRepository favoritoRepository) {
+    public FavoritoService(FavoritoRepository favoritoRepository, ListaRepository listaRepository) {
         this.favoritoRepository = favoritoRepository;
+        this.listaRepository = listaRepository;
     }
 
     public FavoritoResponseDto crear(FavoritoRequestDto request) {
-        Favorito favorito = new Favorito(null, request.productoId(), request.nota(), LocalDateTime.now());
+        validarQueExisteLista(request.listaId());
+        Favorito favorito = new Favorito(
+                null,
+                request.productoId(),
+                request.nota(),
+                LocalDateTime.now(),
+                request.listaId()
+        );
         Favorito guardado = favoritoRepository.save(favorito);
         return mapearAResponseDto(guardado);
     }
@@ -34,14 +44,23 @@ public class FavoritoService {
                 .toList();
     }
 
+    public List<FavoritoResponseDto> listarPorLista(Long listaId) {
+        validarQueExisteLista(listaId);
+        return favoritoRepository.findByListaId(listaId).stream()
+                .map(this::mapearAResponseDto)
+                .toList();
+    }
+
     public FavoritoResponseDto obtenerPorId(Long id) {
         return mapearAResponseDto(buscarOFallar(id));
     }
 
     public FavoritoResponseDto actualizar(Long id, FavoritoRequestDto request) {
         Favorito favorito = buscarOFallar(id);
+        validarQueExisteLista(request.listaId());
         favorito.setProductoId(request.productoId());
         favorito.setNota(request.nota());
+        favorito.setListaId(request.listaId());
         return mapearAResponseDto(favoritoRepository.save(favorito));
     }
 
@@ -55,12 +74,19 @@ public class FavoritoService {
                 .orElseThrow(() -> new FavoritoNoEncontradoException(id));
     }
 
+    private void validarQueExisteLista(Long listaId) {
+        if (listaRepository.findById(listaId).isEmpty()) {
+            throw new ListaNoEncontradaException(listaId);
+        }
+    }
+
     private FavoritoResponseDto mapearAResponseDto(Favorito favorito) {
         return new FavoritoResponseDto(
                 favorito.getId(),
                 favorito.getProductoId(),
                 favorito.getNota(),
-                favorito.getFechaAgregado()
+                favorito.getFechaAgregado(),
+                favorito.getListaId()
         );
     }
 }

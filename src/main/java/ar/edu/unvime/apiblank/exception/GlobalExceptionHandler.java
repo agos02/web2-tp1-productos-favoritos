@@ -45,6 +45,34 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
+    @ExceptionHandler(ListaNoEncontradaException.class)
+    public ResponseEntity<ErrorResponseDto> manejarListaNoEncontrada(
+            ListaNoEncontradaException ex, WebRequest request) {
+
+        ErrorResponseDto error = new ErrorResponseDto(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                ex.getMessage(),
+                extraerPath(request)
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(ListaConFavoritosException.class)
+    public ResponseEntity<ErrorResponseDto> manejarListaConFavoritos(
+            ListaConFavoritosException ex, WebRequest request) {
+
+        ErrorResponseDto error = new ErrorResponseDto(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                ex.getMessage(),
+                extraerPath(request)
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationErrorResponseDto> manejarValidacion(
             MethodArgumentNotValidException ex, WebRequest request) {

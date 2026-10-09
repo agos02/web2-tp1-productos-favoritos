@@ -13,9 +13,11 @@ import ar.edu.unvime.apiblank.repository.FavoritoRepository;
 public class FavoritoRepositoryAdapter implements FavoritoRepository {
 
     private final FavoritoJpaRepository jpaRepository;
+    private final ListaJpaRepository listaJpaRepository;
 
-    public FavoritoRepositoryAdapter(FavoritoJpaRepository jpaRepository) {
+    public FavoritoRepositoryAdapter(FavoritoJpaRepository jpaRepository, ListaJpaRepository listaJpaRepository) {
         this.jpaRepository = jpaRepository;
+        this.listaJpaRepository = listaJpaRepository;
     }
 
     @Override
@@ -37,25 +39,42 @@ public class FavoritoRepositoryAdapter implements FavoritoRepository {
     }
 
     @Override
+    public List<Favorito> findByListaId(Long listaId) {
+        return jpaRepository.findByListaId(listaId).stream()
+                .map(this::aDominio)
+                .toList();
+    }
+
+    @Override
     public void deleteById(Long id) {
         jpaRepository.deleteById(id);
     }
 
     private FavoritoEntity aEntidad(Favorito favorito) {
+        // getReferenceById arma una referencia a la lista usando solo su id, sin consultar la base.
+        // Puede ser null en los favoritos viejos, que todavía no tienen lista.
+        ListaEntity lista = favorito.getListaId() != null
+                ? listaJpaRepository.getReferenceById(favorito.getListaId())
+                : null;
+
         return new FavoritoEntity(
                 favorito.getId(),
                 favorito.getProductoId(),
                 favorito.getNota(),
-                favorito.getFechaAgregado()
+                favorito.getFechaAgregado(),
+                lista
         );
     }
 
     private Favorito aDominio(FavoritoEntity entidad) {
+        Long listaId = entidad.getLista() != null ? entidad.getLista().getId() : null;
+
         return new Favorito(
                 entidad.getId(),
                 entidad.getProductoId(),
                 entidad.getNota(),
-                entidad.getFechaAlta()
+                entidad.getFechaAlta(),
+                listaId
         );
     }
 }
