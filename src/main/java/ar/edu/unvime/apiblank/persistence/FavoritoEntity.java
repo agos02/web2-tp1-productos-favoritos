@@ -30,8 +30,8 @@ public class FavoritoEntity {
     @Column(name = "fecha_alta", nullable = false)
     private LocalDateTime fechaAlta;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lista_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "lista_id", nullable = false)
     private ListaEntity lista;
 
     /** Constructor vacío: JPA lo necesita para crear instancias al leer de la base. */
