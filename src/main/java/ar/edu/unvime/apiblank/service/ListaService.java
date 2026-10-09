@@ -3,11 +3,14 @@ package ar.edu.unvime.apiblank.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import ar.edu.unvime.apiblank.dto.ListaRequestDto;
 import ar.edu.unvime.apiblank.dto.ListaResponseDto;
 import ar.edu.unvime.apiblank.exception.ListaConFavoritosException;
 import ar.edu.unvime.apiblank.exception.ListaNoEncontradaException;
+import ar.edu.unvime.apiblank.exception.MovimientoInvalidoException;
+import ar.edu.unvime.apiblank.model.Favorito;
 import ar.edu.unvime.apiblank.model.Lista;
 import ar.edu.unvime.apiblank.repository.FavoritoRepository;
 import ar.edu.unvime.apiblank.repository.ListaRepository;
@@ -45,6 +48,27 @@ public class ListaService {
             throw new ListaConFavoritosException(id);
         }
         listaRepository.deleteById(id);
+    }
+
+    /**
+     * Mueve todos los favoritos de la lista origen a la destino y elimina la origen.
+     * Es transaccional: si algo falla a mitad de camino, no queda ningún cambio aplicado.
+     */
+    @Transactional
+    public void moverFavoritos(Long origenId, Long destinoId) {
+        if (origenId.equals(destinoId)) {
+            throw new MovimientoInvalidoException("La lista destino debe ser distinta de la lista origen");
+        }
+        buscarOFallar(origenId);
+        buscarOFallar(destinoId);
+
+        List<Favorito> favoritos = favoritoRepository.findByListaId(origenId);
+        for (Favorito favorito : favoritos) {
+            favorito.setListaId(destinoId);
+            favoritoRepository.save(favorito);
+        }
+
+        listaRepository.deleteById(origenId);
     }
 
     private Lista buscarOFallar(Long id) {

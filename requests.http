@@ -198,3 +198,43 @@ DELETE http://localhost:8080/api/listas/2
 
 ### Eliminar un favorito (204)
 DELETE http://localhost:8080/api/favoritos/1
+
+### Crear lista destino para mover (201)
+POST http://localhost:8080/api/listas
+Content-Type: application/json
+
+{
+  "nombre": "Cumpleaños"
+}
+
+### Mover favoritos de la lista 1 a la nueva (204). Reemplazá el 4 por el id que te devolvió la lista "Cumpleaños"
+POST http://localhost:8080/api/listas/1/mover-favoritos
+Content-Type: application/json
+
+{
+  "listaDestinoId": 4
+}
+
+### Mover con origen inexistente (404)
+POST http://localhost:8080/api/listas/999/mover-favoritos
+Content-Type: application/json
+
+{
+  "listaDestinoId": 4
+}
+
+### Mover con destino inexistente (404)
+POST http://localhost:8080/api/listas/3/mover-favoritos
+Content-Type: application/json
+
+{
+  "listaDestinoId": 999
+}
+
+### Mover a la misma lista (400)
+POST http://localhost:8080/api/listas/3/mover-favoritos
+Content-Type: application/json
+
+{
+  "listaDestinoId": 3
+}

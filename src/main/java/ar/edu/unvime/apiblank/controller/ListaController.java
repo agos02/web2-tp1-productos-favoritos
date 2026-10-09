@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
-
-import io.swagger.v3.oas.annotations.Operation;
-
 import ar.edu.unvime.apiblank.dto.FavoritoResponseDto;
 import ar.edu.unvime.apiblank.dto.ListaRequestDto;
 import ar.edu.unvime.apiblank.dto.ListaResponseDto;
+import ar.edu.unvime.apiblank.dto.MoverFavoritosRequestDto;
 import ar.edu.unvime.apiblank.service.FavoritoService;
 import ar.edu.unvime.apiblank.service.ListaService;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
+
 
 /** Expone las listas de favoritos como endpoints HTTP. */
 @RestController
@@ -58,6 +58,14 @@ public class ListaController {
     @GetMapping("/{id}/favoritos")
     public List<FavoritoResponseDto> favoritosDeLista(@PathVariable Long id) {
         return favoritoService.listarPorLista(id);
+    }
+
+    @Operation(summary = "Mueve todos los favoritos de una lista a otra y elimina la lista origen")
+    @PostMapping("/{origenId}/mover-favoritos")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void moverFavoritos(@PathVariable Long origenId,
+    @Valid @RequestBody MoverFavoritosRequestDto request) {
+    listaService.moverFavoritos(origenId, request.listaDestinoId());
     }
 
     @Operation(summary = "Elimina una lista vacía (si tiene favoritos responde 409)")
