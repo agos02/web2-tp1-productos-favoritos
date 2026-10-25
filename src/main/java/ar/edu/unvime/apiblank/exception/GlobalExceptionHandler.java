@@ -73,6 +73,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
+    @ExceptionHandler(EmailYaRegistradoException.class)
+    public ResponseEntity<ErrorResponseDto> manejarEmailYaRegistrado(
+            EmailYaRegistradoException ex, WebRequest request) {
+
+        ErrorResponseDto error = new ErrorResponseDto(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                ex.getMessage(),
+                extraerPath(request)
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
     @ExceptionHandler(MovimientoInvalidoException.class)
     public ResponseEntity<ErrorResponseDto> manejarMovimientoInvalido(
             MovimientoInvalidoException ex, WebRequest request) {
