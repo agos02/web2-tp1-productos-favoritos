@@ -1,5 +1,7 @@
 package ar.edu.unvime.apiblank.service;
 
+import ar.edu.unvime.apiblank.dto.LoginRequestDto;
+import ar.edu.unvime.apiblank.dto.LoginResponseDto;
 import ar.edu.unvime.apiblank.dto.RegistroRequestDto;
 import ar.edu.unvime.apiblank.dto.UsuarioResponseDto;
 
@@ -7,4 +9,6 @@ import ar.edu.unvime.apiblank.dto.UsuarioResponseDto;
 public interface UsuarioService {
 
     UsuarioResponseDto registrar(RegistroRequestDto request);
+
+    LoginResponseDto login(LoginRequestDto request);
 }

@@ -265,3 +265,40 @@ Content-Type: application/json
   "email": "esto-no-es-un-email",
   "password": "123"
 }
+
+### ============================================================
+### Login y rutas protegidas
+### ============================================================
+
+### Login con credenciales válidas (200 con token)
+# @name login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ana@mail.com",
+  "password": "clave12345"
+}
+
+### Guarda el token del login anterior para usarlo en los pedidos de abajo
+@token = {{login.response.body.token}}
+
+### Login con contraseña incorrecta (401)
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ana@mail.com",
+  "password": "contraseña-equivocada"
+}
+
+### Listas SIN token (401)
+GET http://localhost:8080/api/listas
+
+### Listas con token inválido (401)
+GET http://localhost:8080/api/listas
+Authorization: Bearer esto.no.es.un.token
+
+### Listas con token válido (200)
+GET http://localhost:8080/api/listas
+Authorization: Bearer {{token}}

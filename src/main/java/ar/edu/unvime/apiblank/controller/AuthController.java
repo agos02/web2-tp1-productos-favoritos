@@ -7,13 +7,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import ar.edu.unvime.apiblank.dto.LoginRequestDto;
+import ar.edu.unvime.apiblank.dto.LoginResponseDto;
 import ar.edu.unvime.apiblank.dto.RegistroRequestDto;
 import ar.edu.unvime.apiblank.dto.UsuarioResponseDto;
 import ar.edu.unvime.apiblank.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 
-/** Expone el registro de usuarios (y más adelante el login) como endpoints HTTP públicos. */
+/** Expone el registro y el login de usuarios como endpoints HTTP públicos. */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -29,5 +31,11 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public UsuarioResponseDto registrar(@Valid @RequestBody RegistroRequestDto request) {
         return usuarioService.registrar(request);
+    }
+
+    @Operation(summary = "Inicia sesión y devuelve un token JWT (responde 401 si las credenciales son incorrectas)")
+    @PostMapping("/login")
+    public LoginResponseDto login(@Valid @RequestBody LoginRequestDto request) {
+        return usuarioService.login(request);
     }
 }

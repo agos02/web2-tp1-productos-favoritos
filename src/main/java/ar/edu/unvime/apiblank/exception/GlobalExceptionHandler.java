@@ -87,6 +87,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
+    @ExceptionHandler(CredencialesInvalidasException.class)
+    public ResponseEntity<ErrorResponseDto> manejarCredencialesInvalidas(
+            CredencialesInvalidasException ex, WebRequest request) {
+
+        ErrorResponseDto error = new ErrorResponseDto(
+                LocalDateTime.now(),
+                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+                ex.getMessage(),
+                extraerPath(request)
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
     @ExceptionHandler(MovimientoInvalidoException.class)
     public ResponseEntity<ErrorResponseDto> manejarMovimientoInvalido(
             MovimientoInvalidoException ex, WebRequest request) {
