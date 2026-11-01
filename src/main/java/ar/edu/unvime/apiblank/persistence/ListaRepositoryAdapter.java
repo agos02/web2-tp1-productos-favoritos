@@ -13,9 +13,11 @@ import ar.edu.unvime.apiblank.repository.ListaRepository;
 public class ListaRepositoryAdapter implements ListaRepository {
 
     private final ListaJpaRepository jpaRepository;
+    private final UsuarioJpaRepository usuarioJpaRepository;
 
-    public ListaRepositoryAdapter(ListaJpaRepository jpaRepository) {
+    public ListaRepositoryAdapter(ListaJpaRepository jpaRepository, UsuarioJpaRepository usuarioJpaRepository) {
         this.jpaRepository = jpaRepository;
+        this.usuarioJpaRepository = usuarioJpaRepository;
     }
 
     @Override
@@ -32,6 +34,13 @@ public class ListaRepositoryAdapter implements ListaRepository {
     }
 
     @Override
+    public List<Lista> findByUsuarioId(Long usuarioId) {
+        return jpaRepository.findByUsuarioId(usuarioId).stream()
+                .map(this::aDominio)
+                .toList();
+    }
+
+    @Override
     public Optional<Lista> findById(Long id) {
         return jpaRepository.findById(id).map(this::aDominio);
     }
@@ -42,10 +51,12 @@ public class ListaRepositoryAdapter implements ListaRepository {
     }
 
     private ListaEntity aEntidad(Lista lista) {
-        return new ListaEntity(lista.getId(), lista.getNombre());
+        // getReferenceById arma una referencia al usuario usando solo su id, sin consultar la base.
+        UsuarioEntity usuario = usuarioJpaRepository.getReferenceById(lista.getUsuarioId());
+        return new ListaEntity(lista.getId(), lista.getNombre(), usuario);
     }
 
     private Lista aDominio(ListaEntity entidad) {
-        return new Lista(entidad.getId(), entidad.getNombre());
+        return new Lista(entidad.getId(), entidad.getNombre(), entidad.getUsuario().getId());
     }
 }

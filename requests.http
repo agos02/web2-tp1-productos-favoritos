@@ -302,3 +302,156 @@ Authorization: Bearer esto.no.es.un.token
 ### Listas con token válido (200)
 GET http://localhost:8080/api/listas
 Authorization: Bearer {{token}}
+
+
+### ============================================================
+### Autorización: preparación (Ana, Beto y un ADMIN)
+### ============================================================
+
+### A1. Registrar a Beto (201)
+POST http://localhost:8080/api/auth/registro
+Content-Type: application/json
+
+{
+  "email": "beto@mail.com",
+  "password": "clave12345"
+}
+
+### A2. Registrar al futuro ADMIN (201)
+POST http://localhost:8080/api/auth/registro
+Content-Type: application/json
+
+{
+  "email": "admin@mail.com",
+  "password": "clave12345"
+}
+
+
+////////
+
+### A3. Login de Ana (200)
+# @name loginAna
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ana@mail.com",
+  "password": "clave12345"
+}
+
+###
+@tokenAna = {{loginAna.response.body.token}}
+
+### A4. Login de Beto (200)
+# @name loginBeto
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "beto@mail.com",
+  "password": "clave12345"
+}
+
+###
+@tokenBeto = {{loginBeto.response.body.token}}
+
+### A5. Login del ADMIN (200)
+# @name loginAdmin
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@mail.com",
+  "password": "clave12345"
+}
+
+###
+@tokenAdmin = {{loginAdmin.response.body.token}}
+
+### A6. Ana crea su lista (201)
+# @name crearListaAna
+POST http://localhost:8080/api/listas
+Content-Type: application/json
+Authorization: Bearer {{tokenAna}}
+
+{
+  "nombre": "Lista de Ana"
+}
+
+###
+@listaAnaId = {{crearListaAna.response.body.id}}
+
+### A7. Ana crea un favorito en su lista (201)
+# @name crearFavoritoAna
+POST http://localhost:8080/api/favoritos
+Content-Type: application/json
+Authorization: Bearer {{tokenAna}}
+
+{
+  "productoId": 1,
+  "nota": "Favorito de Ana",
+  "listaId": {{listaAnaId}}
+}
+
+###
+@favoritoAnaId = {{crearFavoritoAna.response.body.id}}
+
+### A8. Beto crea su lista (201)
+# @name crearListaBeto
+POST http://localhost:8080/api/listas
+Content-Type: application/json
+Authorization: Bearer {{tokenBeto}}
+
+{
+  "nombre": "Lista de Beto"
+}
+
+###
+@listaBetoId = {{crearListaBeto.response.body.id}}
+
+
+
+
+### ============================================================
+### Autorización: pruebas de acceso permitido y denegado
+### ============================================================
+
+### B1. Ana ve su propia lista (200)
+GET http://localhost:8080/api/listas/{{listaAnaId}}
+Authorization: Bearer {{tokenAna}}
+
+### B2. Beto intenta ver la lista de Ana (403)
+GET http://localhost:8080/api/listas/{{listaAnaId}}
+Authorization: Bearer {{tokenBeto}}
+
+### B3. El ADMIN ve la lista de Ana (200)
+GET http://localhost:8080/api/listas/{{listaAnaId}}
+Authorization: Bearer {{tokenAdmin}}
+
+### B4. Ana lista sus listas: solo debe aparecer la suya (200)
+GET http://localhost:8080/api/listas
+Authorization: Bearer {{tokenAna}}
+
+### B5. El ADMIN lista las listas: aparecen todas (200)
+GET http://localhost:8080/api/listas
+Authorization: Bearer {{tokenAdmin}}
+
+### B6. Beto intenta crear un favorito en la lista de Ana (403)
+POST http://localhost:8080/api/favoritos
+Content-Type: application/json
+Authorization: Bearer {{tokenBeto}}
+
+{
+  "productoId": 2,
+  "nota": "Intento de Beto",
+  "listaId": {{listaAnaId}}
+}
+
+### B7. Beto intenta mover los favoritos de Ana a su lista (403)
+POST http://localhost:8080/api/listas/{{listaAnaId}}/mover-favoritos
+Content-Type: application/json
+Authorization: Bearer {{tokenBeto}}
+
+{
+  "listaDestinoId": {{listaBetoId}}
+}

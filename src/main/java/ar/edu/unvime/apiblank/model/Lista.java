@@ -1,14 +1,16 @@
 package ar.edu.unvime.apiblank.model;
 
-/** Entidad de dominio: una lista que agrupa favoritos (por ejemplo "Regalos"). */
+/** Entidad de dominio: una lista que agrupa favoritos (por ejemplo "Regalos") y pertenece a un usuario. */
 public class Lista {
 
     private Long id;
     private String nombre;
+    private Long usuarioId;
 
-    public Lista(Long id, String nombre) {
+    public Lista(Long id, String nombre, Long usuarioId) {
         this.id = id;
         this.nombre = nombre;
+        this.usuarioId = usuarioId;
     }
 
     public Long getId() {
@@ -25,5 +27,13 @@ public class Lista {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 }

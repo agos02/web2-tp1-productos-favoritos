@@ -101,6 +101,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
+    @ExceptionHandler(AccesoDenegadoException.class)
+    public ResponseEntity<ErrorResponseDto> manejarAccesoDenegado(
+            AccesoDenegadoException ex, WebRequest request) {
+
+        ErrorResponseDto error = new ErrorResponseDto(
+                LocalDateTime.now(),
+                HttpStatus.FORBIDDEN.value(),
+                HttpStatus.FORBIDDEN.getReasonPhrase(),
+                ex.getMessage(),
+                extraerPath(request)
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
     @ExceptionHandler(MovimientoInvalidoException.class)
     public ResponseEntity<ErrorResponseDto> manejarMovimientoInvalido(
             MovimientoInvalidoException ex, WebRequest request) {
