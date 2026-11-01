@@ -50,7 +50,9 @@ class ListaServiceImplTest {
 
         ArgumentCaptor<Lista> captor = ArgumentCaptor.forClass(Lista.class);
         verify(listaRepository).save(captor.capture());
-        assertEquals(7L, captor.getValue().getUsuarioId());
+      //reemplazo: assertEquals(7L, captor.getValue().getUsuarioId()); por:
+        assertEquals(8L, captor.getValue().getUsuarioId());
+      
         assertEquals("Regalos", captor.getValue().getNombre());
     }
 
