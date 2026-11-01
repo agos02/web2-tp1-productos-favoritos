@@ -1,0 +1,32 @@
+name: CI
+
+# Se ejecuta en cada push y en cada pull request.
+on:
+  push:
+  pull_request:
+
+jobs:
+  compilar-y-testear:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Instalar Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      # Desde Windows el archivo mvnw puede quedar sin permiso de ejecución en Linux.
+      - name: Dar permiso de ejecución al Maven Wrapper
+        run: chmod +x mvnw
+
+      - name: Compilar
+        run: ./mvnw -B compile
+
+      # Incluye las migraciones contra una base limpia (Testcontainers) y las pruebas del punto 5.
+      - name: Correr los tests
+        run: ./mvnw -B test
