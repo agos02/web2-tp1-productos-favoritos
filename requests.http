@@ -1,246 +1,37 @@
 ### ============================================================
-### Health check
+### requests.http - TP3
+### Ejecutar de arriba hacia abajo, con "Send Request", sobre una base limpia.
+### Las líneas que empiezan con @ no se mandan: solo guardan datos de respuestas anteriores.
+### Los emails de los usuarios se registran una sola vez: si repetís la corrida sin limpiar
+### la base, el registro da 409 (es normal), y podés seguir con el login.
 ### ============================================================
 
-### Health check
-GET http://localhost:8080/health
-
-
-### ============================================================
-### Productos
-### ============================================================
-
-### Listar productos
-GET http://localhost:8080/api/productos
-
-### Obtener un producto
-GET http://localhost:8080/api/productos/1
-
-### Probar producto inexistente (404)
-GET http://localhost:8080/api/productos/99999
+@baseUrl = http://localhost:8080
 
 
 ### ============================================================
-### Listas (crear primero: los favoritos las necesitan)
-### En una base limpia, "Regalos" queda con id 1 y "Para comprar en oferta" con id 2
+### 1. Rutas públicas (sin token)
 ### ============================================================
 
-### Crear lista "Regalos" (201)
-POST http://localhost:8080/api/listas
-Content-Type: application/json
+### Health check (200)
+GET {{baseUrl}}/health
 
-{
-  "nombre": "Regalos"
-}
+### Listar productos (200)
+GET {{baseUrl}}/api/productos
 
-### Crear lista "Para comprar en oferta" (201, queda vacía)
-POST http://localhost:8080/api/listas
-Content-Type: application/json
+### Obtener un producto (200)
+GET {{baseUrl}}/api/productos/1
 
-{
-  "nombre": "Para comprar en oferta"
-}
-
-### Crear una lista con nombre vacío (400 validación)
-POST http://localhost:8080/api/listas
-Content-Type: application/json
-
-{
-  "nombre": ""
-}
-
-### Listar listas (200)
-GET http://localhost:8080/api/listas
-
-### Obtener una lista (200)
-GET http://localhost:8080/api/listas/1
-
-### Obtener una lista inexistente (404)
-GET http://localhost:8080/api/listas/999
+### Producto inexistente (404)
+GET {{baseUrl}}/api/productos/99999
 
 
 ### ============================================================
-### Favoritos
+### 2. Registro y login
 ### ============================================================
 
-### Crear un favorito (201)
-POST http://localhost:8080/api/favoritos
-Content-Type: application/json
-
-{
-  "productoId": 1,
-  "nota": "Me gustó para regalo",
-  "listaId": 1
-}
-
-### Crear otro favorito (201)
-POST http://localhost:8080/api/favoritos
-Content-Type: application/json
-
-{
-  "productoId": 6,
-  "nota": "Para el cumpleaños de mamá",
-  "listaId": 1
-}
-
-### Listar favoritos (200)
-GET http://localhost:8080/api/favoritos
-
-### Obtener un favorito (reemplazá el 1 por el id que te devolvió el POST)
-GET http://localhost:8080/api/favoritos/1
-
-### Probar un favorito inexistente (404)
-GET http://localhost:8080/api/favoritos/999
-
-### Actualizar un favorito (200)
-PUT http://localhost:8080/api/favoritos/1
-Content-Type: application/json
-
-{
-  "productoId": 1,
-  "nota": "Nota actualizada",
-  "listaId": 1
-}
-
-### Probar validación: nota vacía (400)
-POST http://localhost:8080/api/favoritos
-Content-Type: application/json
-
-{
-  "productoId": 1,
-  "nota": "",
-  "listaId": 1
-}
-
-### Probar validación: productoId faltante (400)
-POST http://localhost:8080/api/favoritos
-Content-Type: application/json
-
-{
-  "nota": "Sin producto",
-  "listaId": 1
-}
-
-### Probar validación: listaId faltante (400)
-POST http://localhost:8080/api/favoritos
-Content-Type: application/json
-
-{
-  "productoId": 1,
-  "nota": "Sin lista"
-}
-
-### Probar lista inexistente (404)
-POST http://localhost:8080/api/favoritos
-Content-Type: application/json
-
-{
-  "productoId": 1,
-  "nota": "Lista que no existe",
-  "listaId": 999
-}
-
-### Actualizar un favorito con lista inexistente (404)
-PUT http://localhost:8080/api/favoritos/2
-Content-Type: application/json
-
-{
-  "productoId": 6,
-  "nota": "Lista que no existe",
-  "listaId": 999
-}
-
-### Actualizar un favorito inexistente (404)
-PUT http://localhost:8080/api/favoritos/999
-Content-Type: application/json
-
-{
-  "productoId": 1,
-  "nota": "No existe",
-  "listaId": 1
-}
-
-### Eliminar un favorito inexistente (404)
-DELETE http://localhost:8080/api/favoritos/999
-
-
-### ============================================================
-### Favoritos de una lista
-### ============================================================
-
-### Favoritos de una lista con datos (200)
-GET http://localhost:8080/api/listas/1/favoritos
-
-### Favoritos de una lista vacía (200, [])
-GET http://localhost:8080/api/listas/2/favoritos
-
-### Favoritos de una lista inexistente (404)
-GET http://localhost:8080/api/listas/999/favoritos
-
-
-### ============================================================
-### Eliminar listas
-### ============================================================
-
-### Eliminar una lista con favoritos (409)
-DELETE http://localhost:8080/api/listas/1
-
-### Eliminar una lista inexistente (404)
-DELETE http://localhost:8080/api/listas/999
-
-### Eliminar una lista vacía (204)
-DELETE http://localhost:8080/api/listas/2
-
-
-### ============================================================
-### Eliminar un favorito (204) - dejalo para el final: borra el favorito 1
-### ============================================================
-
-### Eliminar un favorito (204)
-DELETE http://localhost:8080/api/favoritos/1
-
-### Crear lista destino para mover (201)
-POST http://localhost:8080/api/listas
-Content-Type: application/json
-
-{
-  "nombre": "Cumpleaños"
-}
-
-### Mover favoritos de la lista 1 a la nueva (204). Reemplazá el 4 por el id que te devolvió la lista "Cumpleaños"
-POST http://localhost:8080/api/listas/1/mover-favoritos
-Content-Type: application/json
-
-{
-  "listaDestinoId": 4
-}
-
-### Mover con origen inexistente (404)
-POST http://localhost:8080/api/listas/999/mover-favoritos
-Content-Type: application/json
-
-{
-  "listaDestinoId": 4
-}
-
-### Mover con destino inexistente (404)
-POST http://localhost:8080/api/listas/3/mover-favoritos
-Content-Type: application/json
-
-{
-  "listaDestinoId": 999
-}
-
-### Mover a la misma lista (400)
-POST http://localhost:8080/api/listas/3/mover-favoritos
-Content-Type: application/json
-
-{
-  "listaDestinoId": 3
-}
-
-### Registrar un usuario (201, la respuesta no incluye contraseña)
-POST http://localhost:8080/api/auth/registro
+### Registrar a Ana (201)
+POST {{baseUrl}}/api/auth/registro
 Content-Type: application/json
 
 {
@@ -248,8 +39,26 @@ Content-Type: application/json
   "password": "clave12345"
 }
 
-### Registrar el mismo email otra vez (409)
-POST http://localhost:8080/api/auth/registro
+### Registrar a Beto (201)
+POST {{baseUrl}}/api/auth/registro
+Content-Type: application/json
+
+{
+  "email": "beto@mail.com",
+  "password": "clave12345"
+}
+
+### Registrar al futuro ADMIN (201)
+POST {{baseUrl}}/api/auth/registro
+Content-Type: application/json
+
+{
+  "email": "admin@mail.com",
+  "password": "clave12345"
+}
+
+### Registrar un email repetido (409)
+POST {{baseUrl}}/api/auth/registro
 Content-Type: application/json
 
 {
@@ -258,7 +67,7 @@ Content-Type: application/json
 }
 
 ### Registro con datos inválidos (400: email mal formado y contraseña corta)
-POST http://localhost:8080/api/auth/registro
+POST {{baseUrl}}/api/auth/registro
 Content-Type: application/json
 
 {
@@ -266,72 +75,16 @@ Content-Type: application/json
   "password": "123"
 }
 
-### ============================================================
-### Login y rutas protegidas
-### ============================================================
+### ------------------------------------------------------------
+### PASO MANUAL: convertir a admin@mail.com en ADMIN (el registro siempre crea USER).
+### Ejecutar en la terminal ANTES de hacer el login del ADMIN, porque el rol viaja dentro del token:
+###
+### docker exec -it demo-postgres psql -U webii_tp2 -d webii_tp2 -c "UPDATE usuarios SET rol = 'ADMIN' WHERE email = 'admin@mail.com';"
+### ------------------------------------------------------------
 
-### Login con credenciales válidas (200 con token)
-# @name login
-POST http://localhost:8080/api/auth/login
-Content-Type: application/json
-
-{
-  "email": "ana@mail.com",
-  "password": "clave12345"
-}
-
-### Guarda el token del login anterior para usarlo en los pedidos de abajo
-@token = {{login.response.body.token}}
-
-### Login con contraseña incorrecta (401)
-POST http://localhost:8080/api/auth/login
-Content-Type: application/json
-
-{
-  "email": "ana@mail.com",
-  "password": "contraseña-equivocada"
-}
-
-### Listas SIN token (401)
-GET http://localhost:8080/api/listas
-
-### Listas con token inválido (401)
-GET http://localhost:8080/api/listas
-Authorization: Bearer esto.no.es.un.token
-
-### Listas con token válido (200)
-GET http://localhost:8080/api/listas
-Authorization: Bearer {{token}}
-
-
-### ============================================================
-### Autorización: preparación (Ana, Beto y un ADMIN)
-### ============================================================
-
-### A1. Registrar a Beto (201)
-POST http://localhost:8080/api/auth/registro
-Content-Type: application/json
-
-{
-  "email": "beto@mail.com",
-  "password": "clave12345"
-}
-
-### A2. Registrar al futuro ADMIN (201)
-POST http://localhost:8080/api/auth/registro
-Content-Type: application/json
-
-{
-  "email": "admin@mail.com",
-  "password": "clave12345"
-}
-
-
-////////
-
-### A3. Login de Ana (200)
+### Login de Ana (200 con token)
 # @name loginAna
-POST http://localhost:8080/api/auth/login
+POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 {
@@ -342,9 +95,9 @@ Content-Type: application/json
 ###
 @tokenAna = {{loginAna.response.body.token}}
 
-### A4. Login de Beto (200)
+### Login de Beto (200 con token)
 # @name loginBeto
-POST http://localhost:8080/api/auth/login
+POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 {
@@ -355,9 +108,9 @@ Content-Type: application/json
 ###
 @tokenBeto = {{loginBeto.response.body.token}}
 
-### A5. Login del ADMIN (200)
+### Login del ADMIN (200 con token)
 # @name loginAdmin
-POST http://localhost:8080/api/auth/login
+POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 {
@@ -368,9 +121,38 @@ Content-Type: application/json
 ###
 @tokenAdmin = {{loginAdmin.response.body.token}}
 
-### A6. Ana crea su lista (201)
+### Login con contraseña incorrecta (401)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ana@mail.com",
+  "password": "contraseña-equivocada"
+}
+
+
+### ============================================================
+### 3. Rutas protegidas sin token o con token inválido
+### ============================================================
+
+### Listas sin token (401)
+GET {{baseUrl}}/api/listas
+
+### Favoritos sin token (401)
+GET {{baseUrl}}/api/favoritos
+
+### Listas con token inválido (401)
+GET {{baseUrl}}/api/listas
+Authorization: Bearer esto.no.es.un.token
+
+
+### ============================================================
+### 4. Listas y favoritos de Ana (casos de éxito y error)
+### ============================================================
+
+### Ana crea su lista (201)
 # @name crearListaAna
-POST http://localhost:8080/api/listas
+POST {{baseUrl}}/api/listas
 Content-Type: application/json
 Authorization: Bearer {{tokenAna}}
 
@@ -381,9 +163,31 @@ Authorization: Bearer {{tokenAna}}
 ###
 @listaAnaId = {{crearListaAna.response.body.id}}
 
-### A7. Ana crea un favorito en su lista (201)
+### Ana crea una segunda lista, que va a quedar vacía (201)
+# @name crearListaVaciaAna
+POST {{baseUrl}}/api/listas
+Content-Type: application/json
+Authorization: Bearer {{tokenAna}}
+
+{
+  "nombre": "Lista vacía de Ana"
+}
+
+###
+@listaVaciaAnaId = {{crearListaVaciaAna.response.body.id}}
+
+### Crear una lista con nombre vacío (400)
+POST {{baseUrl}}/api/listas
+Content-Type: application/json
+Authorization: Bearer {{tokenAna}}
+
+{
+  "nombre": ""
+}
+
+### Ana crea un favorito en su lista (201)
 # @name crearFavoritoAna
-POST http://localhost:8080/api/favoritos
+POST {{baseUrl}}/api/favoritos
 Content-Type: application/json
 Authorization: Bearer {{tokenAna}}
 
@@ -396,9 +200,87 @@ Authorization: Bearer {{tokenAna}}
 ###
 @favoritoAnaId = {{crearFavoritoAna.response.body.id}}
 
-### A8. Beto crea su lista (201)
+### Favorito con nota vacía (400)
+POST {{baseUrl}}/api/favoritos
+Content-Type: application/json
+Authorization: Bearer {{tokenAna}}
+
+{
+  "productoId": 1,
+  "nota": "",
+  "listaId": {{listaAnaId}}
+}
+
+### Favorito en una lista inexistente (404)
+POST {{baseUrl}}/api/favoritos
+Content-Type: application/json
+Authorization: Bearer {{tokenAna}}
+
+{
+  "productoId": 1,
+  "nota": "Lista que no existe",
+  "listaId": 99999
+}
+
+### Ana lista sus listas: solo aparecen las suyas (200)
+GET {{baseUrl}}/api/listas
+Authorization: Bearer {{tokenAna}}
+
+### Ana obtiene su lista (200)
+GET {{baseUrl}}/api/listas/{{listaAnaId}}
+Authorization: Bearer {{tokenAna}}
+
+### Lista inexistente (404)
+GET {{baseUrl}}/api/listas/99999
+Authorization: Bearer {{tokenAna}}
+
+### Favoritos de la lista de Ana (200)
+GET {{baseUrl}}/api/listas/{{listaAnaId}}/favoritos
+Authorization: Bearer {{tokenAna}}
+
+### Favoritos de una lista vacía (200, [])
+GET {{baseUrl}}/api/listas/{{listaVaciaAnaId}}/favoritos
+Authorization: Bearer {{tokenAna}}
+
+### Ana lista sus favoritos (200)
+GET {{baseUrl}}/api/favoritos
+Authorization: Bearer {{tokenAna}}
+
+### Ana obtiene su favorito (200)
+GET {{baseUrl}}/api/favoritos/{{favoritoAnaId}}
+Authorization: Bearer {{tokenAna}}
+
+### Favorito inexistente (404)
+GET {{baseUrl}}/api/favoritos/99999
+Authorization: Bearer {{tokenAna}}
+
+### Ana actualiza su favorito (200)
+PUT {{baseUrl}}/api/favoritos/{{favoritoAnaId}}
+Content-Type: application/json
+Authorization: Bearer {{tokenAna}}
+
+{
+  "productoId": 1,
+  "nota": "Nota actualizada",
+  "listaId": {{listaAnaId}}
+}
+
+### Eliminar una lista que tiene favoritos (409)
+DELETE {{baseUrl}}/api/listas/{{listaAnaId}}
+Authorization: Bearer {{tokenAna}}
+
+### Ana elimina su lista vacía (204)
+DELETE {{baseUrl}}/api/listas/{{listaVaciaAnaId}}
+Authorization: Bearer {{tokenAna}}
+
+
+### ============================================================
+### 5. Autorización: acceso permitido y denegado
+### ============================================================
+
+### Beto crea su lista (201)
 # @name crearListaBeto
-POST http://localhost:8080/api/listas
+POST {{baseUrl}}/api/listas
 Content-Type: application/json
 Authorization: Bearer {{tokenBeto}}
 
@@ -409,35 +291,32 @@ Authorization: Bearer {{tokenBeto}}
 ###
 @listaBetoId = {{crearListaBeto.response.body.id}}
 
-
-
-
-### ============================================================
-### Autorización: pruebas de acceso permitido y denegado
-### ============================================================
-
-### B1. Ana ve su propia lista (200)
-GET http://localhost:8080/api/listas/{{listaAnaId}}
+### Ana ve su propia lista (200)
+GET {{baseUrl}}/api/listas/{{listaAnaId}}
 Authorization: Bearer {{tokenAna}}
 
-### B2. Beto intenta ver la lista de Ana (403)
-GET http://localhost:8080/api/listas/{{listaAnaId}}
+### Beto intenta ver la lista de Ana (403)
+GET {{baseUrl}}/api/listas/{{listaAnaId}}
 Authorization: Bearer {{tokenBeto}}
 
-### B3. El ADMIN ve la lista de Ana (200)
-GET http://localhost:8080/api/listas/{{listaAnaId}}
+### El ADMIN ve la lista de Ana (200)
+GET {{baseUrl}}/api/listas/{{listaAnaId}}
 Authorization: Bearer {{tokenAdmin}}
 
-### B4. Ana lista sus listas: solo debe aparecer la suya (200)
-GET http://localhost:8080/api/listas
-Authorization: Bearer {{tokenAna}}
+### Beto lista sus listas: solo aparece la suya (200)
+GET {{baseUrl}}/api/listas
+Authorization: Bearer {{tokenBeto}}
 
-### B5. El ADMIN lista las listas: aparecen todas (200)
-GET http://localhost:8080/api/listas
+### El ADMIN lista las listas: aparecen todas (200)
+GET {{baseUrl}}/api/listas
 Authorization: Bearer {{tokenAdmin}}
 
-### B6. Beto intenta crear un favorito en la lista de Ana (403)
-POST http://localhost:8080/api/favoritos
+### Beto intenta ver un favorito de Ana (403)
+GET {{baseUrl}}/api/favoritos/{{favoritoAnaId}}
+Authorization: Bearer {{tokenBeto}}
+
+### Beto intenta crear un favorito en la lista de Ana (403)
+POST {{baseUrl}}/api/favoritos
 Content-Type: application/json
 Authorization: Bearer {{tokenBeto}}
 
@@ -447,8 +326,12 @@ Authorization: Bearer {{tokenBeto}}
   "listaId": {{listaAnaId}}
 }
 
-### B7. Beto intenta mover los favoritos de Ana a su lista (403)
-POST http://localhost:8080/api/listas/{{listaAnaId}}/mover-favoritos
+### Beto intenta eliminar la lista de Ana (403)
+DELETE {{baseUrl}}/api/listas/{{listaAnaId}}
+Authorization: Bearer {{tokenBeto}}
+
+### Beto intenta mover los favoritos de Ana a su lista (403)
+POST {{baseUrl}}/api/listas/{{listaAnaId}}/mover-favoritos
 Content-Type: application/json
 Authorization: Bearer {{tokenBeto}}
 
@@ -458,12 +341,82 @@ Authorization: Bearer {{tokenBeto}}
 
 
 ### ============================================================
-### Despliegue en Render (base remota en Neon)
+### 6. Mover favoritos entre listas (transacción)
+### Va al final de la parte local: la lista origen se elimina.
+### ============================================================
+
+### Ana crea una lista destino (201)
+# @name crearListaDestinoAna
+POST {{baseUrl}}/api/listas
+Content-Type: application/json
+Authorization: Bearer {{tokenAna}}
+
+{
+  "nombre": "Destino de Ana"
+}
+
+###
+@listaDestinoAnaId = {{crearListaDestinoAna.response.body.id}}
+
+### Mover con origen inexistente (404)
+POST {{baseUrl}}/api/listas/99999/mover-favoritos
+Content-Type: application/json
+Authorization: Bearer {{tokenAna}}
+
+{
+  "listaDestinoId": {{listaDestinoAnaId}}
+}
+
+### Mover con destino inexistente (404)
+POST {{baseUrl}}/api/listas/{{listaAnaId}}/mover-favoritos
+Content-Type: application/json
+Authorization: Bearer {{tokenAna}}
+
+{
+  "listaDestinoId": 99999
+}
+
+### Mover a la misma lista (400)
+POST {{baseUrl}}/api/listas/{{listaAnaId}}/mover-favoritos
+Content-Type: application/json
+Authorization: Bearer {{tokenAna}}
+
+{
+  "listaDestinoId": {{listaAnaId}}
+}
+
+### Mover los favoritos de la lista de Ana a la lista destino (204)
+POST {{baseUrl}}/api/listas/{{listaAnaId}}/mover-favoritos
+Content-Type: application/json
+Authorization: Bearer {{tokenAna}}
+
+{
+  "listaDestinoId": {{listaDestinoAnaId}}
+}
+
+### El favorito ahora está en la lista destino (200)
+GET {{baseUrl}}/api/listas/{{listaDestinoAnaId}}/favoritos
+Authorization: Bearer {{tokenAna}}
+
+### La lista origen ya no existe (404)
+GET {{baseUrl}}/api/listas/{{listaAnaId}}
+Authorization: Bearer {{tokenAna}}
+
+
+### ============================================================
+### 7. Despliegue en Render (base remota en Neon)
+### La primera petición puede tardar cerca de un minuto si el servicio estaba dormido.
 ### ============================================================
 
 @urlPublica = https://web2-practica.onrender.com
 
-### D1. Registrar un usuario en la base remota (201)
+### Health desde la URL pública (200)
+GET {{urlPublica}}/health
+
+### Listas sin token en la URL pública (401)
+GET {{urlPublica}}/api/listas
+
+### Registrar un usuario en la base remota (201; si ya existe da 409 y se sigue con el login)
 POST {{urlPublica}}/api/auth/registro
 Content-Type: application/json
 
@@ -472,7 +425,7 @@ Content-Type: application/json
   "password": "clave12345"
 }
 
-### D2. Login (200 con token)
+### Login en la URL pública (200 con token)
 # @name loginRemoto
 POST {{urlPublica}}/api/auth/login
 Content-Type: application/json
@@ -485,6 +438,6 @@ Content-Type: application/json
 ###
 @tokenRemoto = {{loginRemoto.response.body.token}}
 
-### D3. Listas con token válido (200)
+### Listas con token válido en la URL pública (200)
 GET {{urlPublica}}/api/listas
 Authorization: Bearer {{tokenRemoto}}
