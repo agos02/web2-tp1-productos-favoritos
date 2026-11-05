@@ -455,3 +455,36 @@ Authorization: Bearer {{tokenBeto}}
 {
   "listaDestinoId": {{listaBetoId}}
 }
+
+
+### ============================================================
+### Despliegue en Render (base remota en Neon)
+### ============================================================
+
+@urlPublica = https://web2-practica.onrender.com
+
+### D1. Registrar un usuario en la base remota (201)
+POST {{urlPublica}}/api/auth/registro
+Content-Type: application/json
+
+{
+  "email": "ana@mail.com",
+  "password": "clave12345"
+}
+
+### D2. Login (200 con token)
+# @name loginRemoto
+POST {{urlPublica}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ana@mail.com",
+  "password": "clave12345"
+}
+
+###
+@tokenRemoto = {{loginRemoto.response.body.token}}
+
+### D3. Listas con token válido (200)
+GET {{urlPublica}}/api/listas
+Authorization: Bearer {{tokenRemoto}}
